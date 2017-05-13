@@ -1,0 +1,65 @@
+#!/usr/bin/ash
+
+run_hook() {
+	#mkfifo /myfsck
+	#echo stderr test >&2
+	#echo Starting tmux
+	#sleep 1
+	#LANG=en_US.UTF-8
+	#TERM=linux
+	#mkdir /tmp/tmux-0
+	#tmux new-session "echo MESSAGE HERE!; head -n 1 /myfsck" \; split-window -d "e2fsck -f -y -v -C 0 /dev/sdb2; e2fsck -f -y -v -C 0 /dev/sda5; echo done > /myfsck"
+	#echo Tmux exited with $?
+	#rm /myfsck
+	
+	clear
+
+	tput bold
+	cat /etc/issue.boot
+	tput sgr0
+
+	ROWS=48
+
+	size=$(wc -l < /etc/issue.boot)
+	my_space=$(($ROWS - size - 1))
+	min() {
+		test $1 -gt $2 && echo $2 || echo $1
+	}
+	tput cup $(($ROWS - $my_space - 1))
+	for j in $(seq $(tput cols)); do
+		echo -n '─'
+	done
+
+	touch /myfsck
+	(e2fsck -f -y -v -C 0 /dev/sdb2; e2fsck -f -y -v -C 0 /dev/sda5; touch /fsck_done) &> /myfsck &
+	#(e2fsck -f -y -v -C 0 /dev/sdb2; sleep 4; touch /fsck_done) &> /myfsck &
+	#(for i in $(seq 1 20); do echo $i$'\x0d'end; sleep 1; done; touch /fsck_done) &> /myfsck &
+
+	oldlines=0
+	while ! test -f /fsck_done; do
+		lines=$(wc -l /myfsck|cut -d " " -f 1)
+		if test "$lines" -ne "$oldlines"; then
+			oldlines=$lines
+			thisone=$my_space
+		else
+			thisone=1
+		fi
+		for k in $(seq $(min $thisone $(wc -l /myfsck))); do
+			tput cup $(($ROWS - $k))
+			msg=$(tail -n $k /myfsck|head -n 1|tr -d '\n'|rev|cut -d $'\x0d' -f 1-2|rev|tr -d $'\x0d')
+			len=$(($(echo -n $msg|wc -c) - 1))
+			if test $len -gt $(tput cols); then
+				msg="LOOOOONG            "
+				len=$(($(echo $msg|wc -c) - 10))
+			fi
+			echo -n $msg
+			for j in $(seq $(($(tput cols) - 1 - $len))); do
+				echo -n ' '
+			done
+		done
+		sleep .1
+	done
+
+}
+
+# vim: set ft=sh ts=4 sw=4 et:

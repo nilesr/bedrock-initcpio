@@ -1,0 +1,1 @@
+run `sudo make install` then add e2fsck to BINARIES, myfsck to HOOKS and i915 and fuse to MODULES in `/etc/mkinitcpio.conf`, then run `mkinitcpio -p linux` or whatever preset you use

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+build() {
+    add_runscript
+    #add_binary tmux
+    #add_binary head
+    #add_binary mkfifo
+    add_binary tput
+    add_binary tr
+    add_binary rev
+    add_binary cut
+    add_file "/usr/share/terminfo/l/linux"
+    add_file "/etc/issue.boot"
+    #add_file "/usr/lib/locale/locale-archive"
+    #add_file "/etc/nsswitch.conf"
+}
+
+help() {
+  cat <<HELPEOF
+  my fsck script Niles Rogoff 2017
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:
