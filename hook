@@ -31,7 +31,7 @@ run_hook() {
 	done
 
 	touch /myfsck
-	(e2fsck -f -y -v -C 0 /dev/sda2; e2fsck -f -y -v -C 0 /dev/sda3; touch /fsck_done) &> /myfsck &
+	(e2fsck -f -y -v -C 0 /dev/nvme0n1p1; touch /fsck_done) &> /myfsck &
 	#(e2fsck -f -y -v -C 0 /dev/sdb2; sleep 4; touch /fsck_done) &> /myfsck &
 	#(for i in $(seq 1 20); do echo $i$'\x0d'end; sleep 1; done; touch /fsck_done) &> /myfsck &
 
@@ -59,6 +59,8 @@ run_hook() {
 		done
 		sleep .1
 	done
+
+    clear
 
 }
 
